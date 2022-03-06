@@ -1,0 +1,133 @@
+---
+title: "Project_Nonstationarity"
+author: "Micah Klein and Nathan Bracken"
+date: "03/09/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+pacman::p_load(here, data.table)
+
+food_df = here("Data", "daily-per-capita-caloric-supply.csv") |> fread()
+```
+
+
+
+Data Gather data.
+
+data -> would like faily consistent data and fairly inconsistent data
+        -> comparison to other sreies -> known martingale defined? 
+        
+outcomes -> dickey fuller unit root 
+              - augmented dickey fuller unit root
+              
+predictors ->   residual size 
+                level of previous period
+                amount of change in levels of each period - these are likely correlated
+                amount of change in residuals - correlated
+
+considering classification of underlying processes 
+  - decision trees
+  - logistic multifactor regression
+  
+Executive summary
+The executive summary should be organized and written well. Specifically, it should follow this outline.
+
+Paragraph 2: The big picture
+
+your project's question
+
+Predicting whether or not a segment of time series information will be non stationary or not.
+
+why the question is important/interesting
+
+The underlying stochastic processes of information that we see are composed of random variables. Approximating the future of a given random process requires the identification of the components of the process and the underlying distribution of the given random variable. 
+
+Understanding that a process or time series will have non stationary means that we will be able to identify if the underlying random variable for a random process will be different than the existing one.
+
+what makes this a prediction problem
+
+This is a prediction problem because we are concerned with evaluating the probability that some stream of information will become unstable in a period that we have not yet experienced. While we may know if a certain process is made up of moving averages and auto regressive components 
+
+Paragraph 3: Data
+
+sources
+cleaning
+challenges
+shortcomings
+Paragraph 4: Methods
+
+learning methods applied
+tuned parameters
+method for tuning
+Paragraph 5: Results and conclusion
+
+how you measure performance/success
+how your models perform
+what you think limited your performance
+what you learned in this process
+Paragraph 1: Brief overview of paragraphs 2–5
+
+
+Test Randomly select approximately 20% of your data for a test set. (Don't train on it until everything is done.)
+
+Train Apply "best" techniques to clean, train, and predict. Use four different algorithms—one of which should be a linear-regression-based model (unless it is not possible in your context). Examples of different algorithms: Logistic regression, lasso, random forests, SVM.
+
+CV error Estimate your error (with an appropriately chosen metric) using cross validation.
+
+Test Test your performance with the held out data.
+
+Evaluation of your group member's contribution (submitted individually)
+
+Project workflow
+
+1. Generate/find data
+2. Test series with 
+
+# fancy things that would be nice in the simplest package
+## relative file path
+## environment json
+## make file/docker file
+
+# Adjust for pulling data for nonstationarity
+```{r}
+## DBI, bigrquery,dbplyr
+
+billing_id = Sys.getenv("GCE_TIDYTEXT_PROJECT_ID")
+
+books_bq_con = dbConnect(bigrquery::bigquery(),
+                project ="gdelt-bq", 
+                dataset = "internetarchivebooks",
+                billing = billing_id,
+                use_legacy_sql = FALSE)
+
+books_table_1920 = tbl(books_bq_con,'1920')
+```
+
+
+# Creating Bags of "Non stationary increments"
+```{r}
+# define a bag
+# randomly select number of non stationary shocks
+# randomly size the number of shocks
+# randomly distribute each of the non stationary shocks
+
+# setting parameter, normalize for the lengths of the series
+
+nstat_bag = function(n){
+  # n = number of application of the bag depending on the number of series, input should be a vector of series
+  # select number of shocks to fill the bag (max depends on number of increments of series)
+  fill_bag = runif(n, min = 0, max = 100)
+  # randomly size each item in fill bag
+  # assign yes no to each element of the vector
+  
+}
+```
+
+
+
+
+
+
