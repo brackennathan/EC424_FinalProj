@@ -5,15 +5,49 @@ date: "03/09/2022"
 output: html_document
 ---
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-pacman::p_load(here, data.table)
+pacman::p_load(here, data.table, tseries, tidymodels, janitor)
+```
 
+```{r, data-load}
 food_df = here("Data", "daily-per-capita-caloric-supply.csv") |> fread()
 ```
 
 
+```{r, data-prep}
+## creatign a function for cross fold validation that takes some time period i and makes folds of data up to that period
+food_ts = ts(food_df)
+
+is.ts(food_ts)
+
+names(food_df)
+
+food_df = food_df %>% 
+  mutate()
+## creating a recipe 
+cal_rec = food_train %>% recipe(~.) %>% 
+  step_rename("pcap_dcal" = "Daily caloric supply (OWID based on UN FAO & historical sources)") %>% 
+  step_
+```
+
+
+# Vizualization 
+```{r}
+ts.plot(food_ts)
+```
+
+# Linear Model
+```{r}
+
+```
+
+# Logistic Lasso
+```{r}
+
+```
 
 Data Gather data.
 
@@ -21,7 +55,7 @@ data -> would like faily consistent data and fairly inconsistent data
         -> comparison to other sreies -> known martingale defined? 
         
 outcomes -> dickey fuller unit root 
-              - augmented dickey fuller unit root
+             - augmented dickey fuller unit root
               
 predictors ->   residual size 
                 level of previous period
