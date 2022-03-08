@@ -8,12 +8,16 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-pacman::p_load(here, data.table, tseries, tidymodels, janitor, stringr)
+pacman::p_load(here, data.table, tseries, tidymodels, janitor, stringr, tframe)
 ```
 
 ```{r, data-load}
 food_df = here("Data", "daily-per-capita-caloric-supply.csv") |> fread()
 ```
+
+# Question at Hand 
+  # "How do we locate a Unit Root?"
+    #"Yes, with a test it is visual, but can it be automated/predicted?"
 
 
 ```{r, data-prep}
@@ -28,10 +32,12 @@ food_df$Afghanistan
 food_cts = ts(food_c)
 is.ts(food_ts)
 
-adf.test(food_cts$Ireland$`Daily caloric supply (OWID based on UN FAO & historical sources)`)
+adf.test(food_cts$UnitedKingdom$`Daily caloric supply (OWID based on UN FAO & historical sources)`, k = 
 
 food_df = food_df %>% 
-  mutate(i_nonst = )
+  mutate(i_nonst = lapply(
+    X = 
+  ))
 ## creating a recipe 
 cal_rec = food_train %>% recipe(~.) %>% 
   step_rename("pcap_dcal" = "Daily caloric supply (OWID based on UN FAO & historical sources)") %>% 
@@ -42,6 +48,58 @@ cal_rec = food_train %>% recipe(~.) %>%
 # Vizualization 
 ```{r}
 ts.plot(food_ts)
+```
+
+t = length of series
+s = start of series
+b = beg of interval
+e = end of interval
+
+write a variable for interval length
+  - try iterate along the start of the interval
+  - start at the same time in each series
+  
+# working backwards is much more interesting than forwards
+
+
+
+# Defining a function that takes the intervals of a series
+```{r}
+interval = seq(from = 1, to = 50)
+
+# function that accepts some vector
+e_intv = function(series, intervals) {
+# find the length of the vector   
+  length(series)
+  
+  
+}
+
+
+## Setting base iterations
+nobs = 1000
+nsim = 1000
+NB = rep(0,nsim)
+DF = rep(0,nsim)
+
+## Simulating a process
+wiener = function(nobs) {
+e = rnorm(nobs)
+y = cumsum(e)
+ym1 = y[1:(nobs-1)]
+intW2 = nobs^(-2) * sum(ym1^2)
+intWdW = nobs^(-1) * sum(ym1*e[2:nobs])
+ans = list(intW2=intW2,
+intWdW=intWdW)
+ans
+}
+
+# iterating over the generatied 
+for (i in 1:nobs) {
+BN.moments = wiener(nobs)
+NB[i] = BN.moments$intWdW/BN.moments$intW2
+DF[i] = BN.moments$intWdW/sqrt(BN.moments$intW2)
+}
 ```
 
 # Linear Model
