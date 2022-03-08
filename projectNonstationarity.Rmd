@@ -5,11 +5,10 @@ date: "03/09/2022"
 output: html_document
 ---
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-pacman::p_load(here, data.table, tseries, tidymodels, janitor)
+pacman::p_load(here, data.table, tseries, tidymodels, janitor, stringr)
 ```
 
 ```{r, data-load}
@@ -19,14 +18,20 @@ food_df = here("Data", "daily-per-capita-caloric-supply.csv") |> fread()
 
 ```{r, data-prep}
 ## creatign a function for cross fold validation that takes some time period i and makes folds of data up to that period
-food_ts = ts(food_df)
 
+food_df = as.data.frame(apply(food_df,2,function(x)gsub('\\s+', '',x)))
+
+food_df = food_df %>% split(unique(food_df$Entity))
+
+food_df$Afghanistan 
+  
+food_cts = ts(food_c)
 is.ts(food_ts)
 
-names(food_df)
+adf.test(food_cts$Ireland$`Daily caloric supply (OWID based on UN FAO & historical sources)`)
 
 food_df = food_df %>% 
-  mutate()
+  mutate(i_nonst = )
 ## creating a recipe 
 cal_rec = food_train %>% recipe(~.) %>% 
   step_rename("pcap_dcal" = "Daily caloric supply (OWID based on UN FAO & historical sources)") %>% 
@@ -90,7 +95,11 @@ Paragraph 3: Data
 sources
 cleaning
 challenges
+- managing all of the countries
 shortcomings
+- general lack of predictors
+
+
 Paragraph 4: Methods
 
 learning methods applied
