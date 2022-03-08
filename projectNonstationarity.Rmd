@@ -60,20 +60,41 @@ write a variable for interval length
   - start at the same time in each series
   
 # working backwards is much more interesting than forwards
+# accessing a subsection of a table
 
+# we can try different sizes of intervals
+# different sizes of windows
+# tune our hyperparameters
 
 
 # Defining a function that takes the intervals of a series
 ```{r}
 interval = seq(from = 1, to = 50)
 
-# function that accepts some vector
-e_intv = function(series, intervals) {
-# find the length of the vector   
-  length(series)
+# function that accepts some window and runs the dicke fuller test over the window
+
+
+# function that accepts some vector and returns a tibble logging the window start and end
+e_intv = function(series) {
   
-  
+df_i = function(i){
+adf.test(window_i, k = 3)
 }
+# find the length of the vector
+  window_i = tfwindow(
+    x = series, 
+    start = 1961,
+    end = 2018
+  )
+  tibble(
+    window_n = i,
+    window_start = window_i$start,
+    window_end = window_i$end,
+    nonstat = df_i$p_value
+  )
+}
+
+
 
 
 ## Setting base iterations
