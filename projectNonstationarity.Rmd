@@ -8,7 +8,7 @@ output: html_document
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-pacman::p_load(here, data.table, tseries, tidymodels, janitor, stringr, tframe)
+pacman::p_load(here, data.table, tseries, tidymodels, janitor, stringr, tframe, skimr, data.table)
 ```
 
 ```{r, data-load}
@@ -23,16 +23,30 @@ food_df = here("Data", "daily-per-capita-caloric-supply.csv") |> fread()
 ```{r, data-prep}
 ## creatign a function for cross fold validation that takes some time period i and makes folds of data up to that period
 
+skim(food_df)
+
 food_df = as.data.frame(apply(food_df,2,function(x)gsub('\\s+', '',x)))
 
 food_df = food_df %>% split(unique(food_df$Entity))
 
-food_df$Afghanistan 
-  
-food_cts = ts(food_c)
-is.ts(food_ts)
+food_c = food_df %>% filter(Year >= 1961 & Code != "") %>%
+  mutate(daily_c = `Daily caloric supply (OWID based on UN FAO & historical sources)` ) %>%
+  select(-c(`Daily caloric supply (OWID based on UN FAO & historical sources)`, Code))
 
-adf.test(food_cts$UnitedKingdom$`Daily caloric supply (OWID based on UN FAO & historical sources)`, k = 
+food_c = ts(food_c)
+
+food_c = as.data.frame(food_c)
+#smallest that makes sense is k = 3
+series_1 = food_c %>% filter(Entity == "1")
+
+test_i = adf.test(series_1$daily_c, k = 3)
+
+test_i$p.value
+
+
+
+## size of the interval for project /identification of nonstationarity not the same as adf.test = k
+
 
 food_df = food_df %>% 
   mutate(i_nonst = lapply(
@@ -71,31 +85,107 @@ write a variable for interval length
 ```{r}
 interval = seq(from = 1, to = 50)
 
-# function that accepts some window and runs the dicke fuller test over the window
+# we have series of a country 1 to 58 with calorie count
+   # increasing size interval
 
-
-# function that accepts some vector and returns a tibble logging the window start and end
-e_intv = function(series) {
-  
-df_i = function(i){
-adf.test(window_i, k = 3)
-}
+# function that accepts some window and returns the dickey fuller test over the window
+e_intv = function(series, i_size) {
 # find the length of the vector
-  window_i = tfwindow(
+  vec = lapply(
     x = series, 
-    start = 1961,
-    end = 2018
+    # make sure that start - end \geq 3
+    start = 1:nrow(),
+    end = end
   )
-  tibble(
-    window_n = i,
-    window_start = window_i$start,
-    window_end = window_i$end,
-    nonstat = df_i$p_value
+  # test determines if window is non stationary
+  test_i = adf.test(interval_i, k = 3)
+  return(test_i$p.value)
+}
+
+## null hypothesis 
+  ## In statistics and econometrics, an augmented Dickey–Fuller test (ADF) tests the null hypothesis that a unit root is present in a time series sample. The alternative hypothesis is different depending on which version of the test is used, but is usually stationarity or trend-stationarity. It is an augmented version of the Dickey–Fuller test for a larger and more complicated set of time series models.
+  ## P-value high - > high probability of null -> non station
+  ## P-value low -> low probability null -> reject null -> station
+        # consider de trending and see how p-values change
+start_f = function(series, end, size){
+  filtered_i = filter(series, Year <= end & Year > end - size) 
+  tested_i = adf.test(filtered_i$daily_c, k = 1)
+  if(is.na(tested_i$p.value) == TRUE){
+    tested_i$p.value = 1
+  }
+  return(tested_i$p.value)
+}
+
+start_f(series_1, 58, 4)
+
+# increasing the size of the interval makes it non stationary
+unique(food_c$Entity)
+
+
+```
+
+
+```{r, warning = false, message = false}
+e_frame = data.frame()
+# set warnings==false
+for (i in 1:1){
+  series_i = filter(food_c, Entity == i)
+  for (o in 4:8){
+    vec_o = c(rep(1,o))
+    for (p in o:57){
+      p_val = start_f(series_i, p, o)
+      vec_o = c(vec_o, p_val)
+    }
+    series_i = cbind(series_i, vec_o)
+  }
+  e_frame = rbind.data.frame(e_frame, series_i)
+}
+```
+over the different countries(
+filter for series_i 
+for loop (o) over diffrent sizes( 
+for loop (p) over diffrent end years(
+add (start_f (series_i, p, o)) to vector 
+)
+
+```{r}
+
+
+
+a = start_f(series = series_1, end = 4, i_size = 4)
+
+end_v
+size_v
+
+x = rnorm(1000)
+adf.test(x)
+
+lapply()
+
+
+c# taking the series and producing a metadata containing the results of each interval  
+df_i = function(series, start, end){
+  window = e_intv(series, start, end)
+tibble(
+    interation_n = i,
+    w_start = window_i$start,
+    w_end = window_i$end,
+    nonstat_p = window
   )
 }
 
+#write another function here grabbing each series
+e_intv(series = series_1, start = 1 , end = 58)
+
+e_intv()
+# function that accepts some vector and returns a tibble logging the window start and end
 
 
+tfwindow(foood_ts)
+
+pivot_wider(foood_ts)
+
+foood_ts[]
 
 ## Setting base iterations
 nobs = 1000
