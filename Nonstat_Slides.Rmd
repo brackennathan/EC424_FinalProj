@@ -16,8 +16,6 @@ output:
       
 ---
 
-exclude: true
-
 # The Big Picture
 
 - Predict the location of non stationary in time series
